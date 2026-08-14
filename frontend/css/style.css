@@ -1,0 +1,560 @@
+/* =========================================
+   RESET E CONFIGURAÇÕES GERAIS
+========================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eef5fb 0%,
+      #f8fafc 50%,
+      #eaf2f8 100%
+    );
+
+  color: #1f2937;
+}
+
+
+/* =========================================
+   CONTAINER PRINCIPAL
+========================================= */
+
+.container {
+  width: calc(100% - 32px);
+  max-width: 900px;
+
+  margin: 40px auto;
+  padding: 32px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border: 1px solid #e5eaf0;
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.08),
+    0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================================
+   TÍTULOS
+========================================= */
+
+h2 {
+  margin: 0 0 28px;
+
+  color: #123b5d;
+
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+h2::before {
+  content: "";
+  display: inline-block;
+
+  width: 5px;
+  height: 28px;
+
+  background: #1687c7;
+  border-radius: 5px;
+}
+
+h3 {
+  margin: 0 0 14px;
+
+  color: #174a6e;
+  font-size: 20px;
+}
+
+
+/* =========================================
+   CAMPOS
+========================================= */
+
+input,
+select,
+textarea {
+  width: 100%;
+
+  display: block;
+
+  padding: 13px 15px;
+  margin-top: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid #d5dde5;
+  border-radius: 10px;
+
+  color: #1f2937;
+
+  font-family: inherit;
+  font-size: 15px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #b7c5d3;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #1687c7;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 135, 199, 0.12);
+
+  background: #fcfeff;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+
+/* =========================================
+   INPUT DE ARQUIVO
+========================================= */
+
+input[type="file"] {
+  padding: 10px;
+
+  background: #f8fafc;
+
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 10px;
+
+  padding: 9px 14px;
+
+  background: #e7f3fa;
+  color: #126a9d;
+
+  border: none;
+  border-radius: 7px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: #d7edf8;
+}
+
+
+/* =========================================
+   BOTÕES
+========================================= */
+
+button {
+  width: 100%;
+
+  margin-top: 18px;
+  padding: 13px 18px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #1687c7,
+    #126da3
+  );
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 10px rgba(18, 109, 163, 0.2);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
+}
+
+button:hover {
+  filter: brightness(1.06);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 14px rgba(18, 109, 163, 0.25);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================
+   CARDS
+========================================= */
+
+.card {
+  position: relative;
+
+  margin: 16px 0;
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e3e9ef;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.06);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+
+  border-color: #c9dce8;
+
+  box-shadow:
+    0 8px 20px rgba(15, 23, 42, 0.09);
+}
+
+.card h3 {
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid #edf1f5;
+}
+
+.card p {
+  margin: 10px 0;
+
+  color: #526170;
+
+  line-height: 1.5;
+}
+
+.card p b {
+  color: #263b4d;
+}
+
+
+/* =========================================
+   ÁREA DE RESULTADO DA TRIAGEM
+========================================= */
+
+#resultado {
+  margin-top: 20px;
+  padding: 14px 16px;
+
+  border-radius: 10px;
+
+  font-weight: 700;
+  text-align: center;
+
+  border: 1px solid transparent;
+}
+
+
+/* =========================================
+   CLASSIFICAÇÃO DE RISCO
+========================================= */
+
+.Verde {
+  display: inline-block;
+
+  padding: 6px 12px;
+
+  background: #dcfce7;
+  color: #15803d;
+
+  border: 1px solid #bbf7d0;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.Amarelo {
+  display: inline-block;
+
+  padding: 6px 12px;
+
+  background: #fef3c7;
+  color: #a16207;
+
+  border: 1px solid #fde68a;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.Vermelho {
+  display: inline-block;
+
+  padding: 6px 12px;
+
+  background: #fee2e2;
+  color: #b91c1c;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================
+   RESULTADO COMPLETO DA TRIAGEM
+========================================= */
+
+#resultado.Verde {
+  display: block;
+
+  background: #f0fdf4;
+  color: #15803d;
+
+  border-color: #bbf7d0;
+
+  border-radius: 12px;
+}
+
+#resultado.Amarelo {
+  display: block;
+
+  background: #fffbeb;
+  color: #a16207;
+
+  border-color: #fde68a;
+
+  border-radius: 12px;
+}
+
+#resultado.Vermelho {
+  display: block;
+
+  background: #fef2f2;
+  color: #b91c1c;
+
+  border-color: #fecaca;
+
+  border-radius: 12px;
+}
+
+
+/* =========================================
+   SEPARADOR DO PAINEL MÉDICO
+========================================= */
+
+hr {
+  margin: 32px 0;
+
+  border: none;
+  border-top: 1px solid #e5eaf0;
+}
+
+
+/* =========================================
+   PAINEL MÉDICO
+========================================= */
+
+#triagens {
+  margin-top: 10px;
+}
+
+#triagens .card button {
+  margin-top: 14px;
+}
+
+
+/* =========================================
+   LISTA DE MEDICAÇÕES
+========================================= */
+
+#listaMedicacoes {
+  margin-top: 10px;
+}
+
+#listaMedicacoes .card {
+  border-left: 4px solid #1687c7;
+}
+
+
+/* =========================================
+   SELECT
+========================================= */
+
+select {
+  appearance: none;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%);
+
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 12px) 50%;
+
+  background-size:
+    6px 6px,
+    6px 6px;
+
+  background-repeat: no-repeat;
+
+  padding-right: 40px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   TELA DE LOGIN
+========================================= */
+
+body:has(#usuario) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+body:has(#usuario) .container {
+  max-width: 420px;
+
+  margin: 0;
+  padding: 38px 32px;
+}
+
+body:has(#usuario) h2 {
+  justify-content: center;
+
+  margin-bottom: 30px;
+
+  font-size: 27px;
+}
+
+body:has(#usuario) h2::before {
+  display: none;
+}
+
+body:has(#usuario) button {
+  margin-top: 22px;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .container {
+    width: calc(100% - 20px);
+
+    margin: 10px auto;
+    padding: 22px 18px;
+
+    border-radius: 14px;
+  }
+
+  h2 {
+    font-size: 23px;
+  }
+
+  h2::before {
+    height: 23px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  body:has(#usuario) {
+    padding: 10px;
+  }
+
+  body:has(#usuario) .container {
+    padding: 30px 20px;
+  }
+}
+
+
+/* =========================================
+   TELAS MUITO PEQUENAS
+========================================= */
+
+@media (max-width: 380px) {
+
+  .container {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  h2 {
+    font-size: 21px;
+  }
+}

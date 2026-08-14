@@ -1,0 +1,46 @@
+{
+  "usuarios": [
+    {
+      "usuario": "triagem",
+      "senha": "1234",
+      "tipo": "triagem"
+    },
+    {
+      "usuario": "medico",
+      "senha": "12345",
+      "tipo": "medico"
+    },
+    {
+      "usuario": "atendimento",
+      "senha": "123",
+      "tipo": "atendimento"
+    }
+  ],
+  "pacientes": [
+    {
+      "id": 1786705731572,
+      "nome": "Pedro",
+      "cpf": "111.222.333-44",
+      "tipo": "Convenio",
+      "status": "triagem",
+      "createdAt": "2026-08-14T11:08:51.572Z"
+    }
+  ],
+  "triagens": [],
+  "tv_chamada": {
+    "id": "1786705772450",
+    "localTipo": "Guichê",
+    "localNumero": "01",
+    "paciente": "Pedro",
+    "hora": "08:09"
+  },
+  "tv_historico": [
+    {
+      "id": "1786705772450",
+      "localTipo": "Guichê",
+      "localNumero": "01",
+      "paciente": "Pedro",
+      "hora": "08:09"
+    }
+  ]
+}
