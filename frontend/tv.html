@@ -122,7 +122,6 @@
   </style>
 </head>
 <body>
-
 <!-- Estrutura da tela da TV criada para exibir o local e o nome do paciente chamado -->
 <div class="tv-container">
   <div class="left-panel">
@@ -145,10 +144,8 @@
     </div>
   </div>
 </div>
-
 <script>
 let ultimoId = null;
-
 // Função criada para buscar a chamada atual e o histórico da TV em tempo real.
 function atualizar() {
   fetch("/tv/chamada")
@@ -156,12 +153,10 @@ function atualizar() {
     .then(data => {
       const chamada = data.chamada;
       const historico = data.historico || [];
-
       if (chamada) {
         document.getElementById("local-tipo").innerText = chamada.localTipo || "Guichê";
         document.getElementById("local-numero").innerText = chamada.localNumero || "--";
         document.getElementById("patient-name").innerText = chamada.paciente || "Aguardando...";
-
         // Flash visual quando há chamada nova
         if (chamada.id !== ultimoId) {
           ultimoId = chamada.id;
@@ -171,12 +166,11 @@ function atualizar() {
           patientBox.classList.add("flash");
         }
       }
-
       // Histórico
       const list = document.getElementById("history-list");
       list.innerHTML = "";
       historico.slice(0, 4).forEach(h => {
-        const li = document.createElement("li");''
+        const li = document.createElement("li");
         const tipo = h.localTipo ? h.localTipo.substring(0,4) : "GUIC";
         li.innerText = `${tipo}. ${h.localNumero} - ${h.paciente}`;
         list.appendChild(li);
@@ -184,11 +178,9 @@ function atualizar() {
     })
     .catch(err => console.log("Erro ao buscar chamada:", err));
 }
-
 // Polling a cada 2 segundos
 atualizar();
 setInterval(atualizar, 2000);
 </script>
-
 </body>
 </html>
