@@ -4,74 +4,15 @@
 <meta charset="UTF-8">
 <title>Triagem</title>
 <link rel="stylesheet" href="css/style.css">
-<style>
-  .btn-tv {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-left: 8px;
-  }
-  .btn-tv:hover { background: #1e7e34; }
-
-  .pacientes-fila {
-    margin-bottom: 30px;
-    background: #f0f4ff;
-    border-radius: 8px;
-    padding: 16px;
-    border: 1px solid #d0d8f0;
-  }
-  .pacientes-fila h3 {
-    margin-top: 0;
-    color: #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .pacientes-fila h3 span {
-    font-size: 13px;
-    font-weight: normal;
-    color: #666;
-  }
-  .fila-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: white;
-    border-radius: 6px;
-    padding: 10px 14px;
-    margin-bottom: 8px;
-    border: 1px solid #dce4ff;
-  }
-  .fila-item strong { font-size: 15px; }
-  .fila-item small { color: #888; font-size: 12px; }
-  .btn-abrir-tv {
-    display: inline-block;
-    background: #17a2b8;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 5px;
-    font-size: 14px;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-  }
-  .btn-abrir-tv:hover { background: #117a8b; }
-</style>
 </head>
-
 <body>
+<button class="btn-sair" onclick="sair()">← Sair</button>
 <div class="container">
-
   <!-- Cabeçalho com botão da TV -->
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
     <h2 style="margin:0;">Triagem Hospitalar</h2>
     <button class="btn-abrir-tv" onclick="window.open('tv.html','_blank')">📺 Abrir Tela da TV</button>
   </div>
-
   <!-- Fila de pacientes do Atendimento criada para mostrar quem pode ser chamado na TV -->
   <div class="pacientes-fila">
     <h3>
@@ -83,12 +24,9 @@
     </div>
     <button onclick="carregarPacientes()" style="margin-top:8px; background:#6c757d; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; font-size:13px;">🔄 Atualizar lista</button>
   </div>
-
   <hr>
-
   <h3>Formulário de Triagem</h3>
   <input id="nome" placeholder="Nome do paciente">
-
   <select id="sintoma">
     <option value="">Selecione o sintoma</option>
     <option value="dor_leve">Dor leve</option>
@@ -105,19 +43,13 @@
     <option value="convulsao">Convulsão</option>
     <option value="hemorragia">Hemorragia</option>
   </select>
-
   <input id="temp" type="number" placeholder="Temperatura">
   <input id="alergia" placeholder="Alergias">
   <textarea id="observacao" placeholder="Observações"></textarea>
-
   <div id="resultado"></div>
-
   <button onclick="salvar()">Salvar Triagem</button>
-
 </div>
-
 <script>
-
 function carregarPacientes() {
   fetch("/pacientes")
     .then(r => r.json())
@@ -131,7 +63,6 @@ function carregarPacientes() {
         div.innerHTML = "<p style='color:#888; text-align:center;'>Nenhum paciente aguardando.</p>";
         return;
       }
-
       div.innerHTML = "";
       fila.forEach(p => {
         const item = document.createElement("div");
@@ -151,7 +82,6 @@ function carregarPacientes() {
         "<p style='color:red;'>Erro ao carregar pacientes.</p>";
     });
 }
-
 // Função criada para enviar o nome do paciente para a TV quando ele for chamado no guichê.
 function chamarNaTV(nome) {
   fetch("/tv/chamar", {
@@ -168,7 +98,6 @@ function chamarNaTV(nome) {
     alert("✅ " + nome + " foi chamado na TV para o Guichê 01!");
   });
 }
-
 function classificarRisco(sintoma, temperatura) {
   const vermelhos = ["infarto","avc","convulsao","hemorragia","falta_ar_grave"];
   const amarelos = ["febre","vomito","diarreia","falta_ar_moderada"];
@@ -177,7 +106,6 @@ function classificarRisco(sintoma, temperatura) {
   if (amarelos.includes(sintoma)) return "amarelo";
   return "verde";
 }
-
 function salvar() {
   const nome = document.getElementById("nome").value;
   const sintoma = document.getElementById("sintoma").value;
@@ -185,7 +113,6 @@ function salvar() {
   const alergia = document.getElementById("alergia").value;
   const observacao = document.getElementById("observacao").value;
   const risco = classificarRisco(sintoma, temperatura);
-
   fetch("/triagem", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -199,14 +126,18 @@ function salvar() {
     alert("Triagem salva com sucesso!");
   });
 }
-
+function sair() {
+  fetch("/logout", {
+    method: "POST"
+  })
+  .then(() => {
+    window.location.href = "index.html";
+  });
+}
 // Carrega a fila ao abrir a página
 carregarPacientes();
-
 // Atualiza a lista automaticamente a cada 10 segundos
 setInterval(carregarPacientes, 10000);
-
 </script>
-
 </body>
 </html>
