@@ -5,27 +5,48 @@
 </head>
 <body>
 <div class="container">
+  
   <h2>Sistema Hospital</h2>
+  
   <input id="usuario" placeholder="Usuário">
   <input id="senha" type="password" placeholder="Senha">
   <button onclick="login()">Entrar</button>
 </div>
-
 <script>
 function login() {
-  fetch("/Login", {
+  fetch("/login", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
-      usuario: usuario.value,
-      senha: senha.value
+      usuario: document.getElementById("usuario").value,
+      senha: document.getElementById("senha").value
     })
   })
-  .then(r => r.json())
+  .then(async response => {
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.erro || "Erro no login");
+    }
+    return data;
+  })
   .then(data => {
-    if(data.tipo === "triagem") location.href = "triagem.html";
-    if(data.tipo === "medico") location.href = "medico.html";
-    if(data.tipo === "atendimento") location.href = "atendimento.html";
+    if (data.tipo === "admin") {
+      location.href = "admin.html";
+    }
+    else if (data.tipo === "triagem") {
+      location.href = "triagem.html";
+    }
+    else if (data.tipo === "medico") {
+      location.href = "medico.html";
+    }
+    else if (data.tipo === "atendimento") {
+      location.href = "atendimento.html";
+    }
+  })
+  .catch(error => {
+    alert(error.message);
   });
 }
 </script>
