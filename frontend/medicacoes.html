@@ -3,49 +3,37 @@
 <head>
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
+<button class="btn-sair" onclick="sair()">← Sair</button>
 <div class="container">
-
   <h2>Medicações Prescritas</h2>
-
   <!-- IMPLEMENTADO: local onde a lista de medicações será exibida -->
   <div id="listaMedicacoes"></div>
-
 </div>
-
 <script>
-
 // IMPLEMENTADO: busca as consultas salvas e mostra as medicações
 function carregarMedicacoesPrescritas() {
   fetch("/medicacoes")
     .then(r => r.json())
     .then(data => {
       const div = document.getElementById("listaMedicacoes");
-
       div.innerHTML = "";
-
       if (data.length === 0) {
         div.innerHTML = "<p>Nenhuma medicação prescrita.</p>";
         return;
       }
-
       data.forEach(c => {
         div.innerHTML += `
           <div class="card">
             <h3>${c.paciente}</h3>
-
             <p>
               <b>Medicação:</b>
               ${c.medicacao}
             </p>
-
             <p>
               <b>Diagnóstico:</b>
               ${c.diagnostico}
             </p>
-
             <p>
               <b>Observações:</b>
               ${c.obs || "Nenhuma"}
@@ -55,10 +43,15 @@ function carregarMedicacoesPrescritas() {
       });
     });
 }
-
+function sair() {
+  fetch("/logout", {
+    method: "POST"
+  })
+  .then(() => {
+    window.location.href = "index.html";
+  });
+}
 carregarMedicacoesPrescritas();
-
 </script>
-
 </body>
 </html>
