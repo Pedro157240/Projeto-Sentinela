@@ -2,11 +2,22 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
+const session = require("express-session");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.use(session({
+  secret: "chave-secreta-do-sistema-hospitalar",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    maxAge: 8 * 60 * 60 * 1000
+  }
+}));
 
 app.use(express.static(path.join(__dirname, "../frontend")));
 
@@ -43,10 +54,20 @@ app.post("/login", (req, res) => {
   );
 
   if (!user) {
-    return res.status(401).json({ erro: "Login inválido" });
+    return res.status(401).json({
+      erro: "Usuário ou senha inválidos"
+    });
   }
 
-  res.json(user);
+  req.session.usuario = {
+    usuario: user.usuario,
+    tipo: user.tipo
+  };
+
+  res.json({
+    usuario: user.usuario,
+    tipo: user.tipo
+  });
 });
 
 // ATENDIMENTO - cadastrar paciente
@@ -180,15 +201,93 @@ app.post("/consulta", (req, res) => {
   res.json(consulta);
 });
 
+// ADMIN
+app.post("/usuarios", (req, res) => {
+  if (!req.session.usuario || req.session.usuario.tipo !== "admin") {
+    return res.status(403).json({
+      erro: "Acesso negado"
+    });
+  }
+
+  const { usuario, senha, tipo } = req.body;
+
+  if (!usuario || !senha || !tipo) {
+    return res.status(400).json({
+      erro: "Preencha todos os campos"
+    });
+  }
+
+  const db = readDB();
+
+  const existe = db.usuarios.some(
+    u => u.usuario.toLowerCase() === usuario.toLowerCase()
+  );
+
+  if (existe) {
+    return res.status(400).json({
+      erro: "Esse usuário já existe"
+    });
+  }
+
+  const novoUsuario = {
+    id: Date.now(),
+    usuario,
+    senha,
+    tipo
+  };
+
+  db.usuarios.push(novoUsuario);
+
+  writeDB(db);
+
+  res.json({
+    mensagem: "Usuário cadastrado com sucesso",
+    usuario: {
+      id: novoUsuario.id,
+      usuario: novoUsuario.usuario,
+      tipo: novoUsuario.tipo
+    }
+  });
+});
+
 // MEDICAÇÕES
 app.get("/medicacoes", (req, res) => {
   const db = readDB();
   res.json(db.consultas);
 });
 
+// FINALIZAR SESSÃO
+app.post("/logout", (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({
+        erro: "Não foi possível encerrar a sessão"
+      });
+    }
+
+    res.json({
+      mensagem: "Sessão encerrada"
+    });
+  });
+});
+
+// VERIFICAR SESSÃO
+app.get("/sessao", (req, res) => {
+  if (!req.session.usuario) {
+    return res.status(401).json({
+      logado: false
+    });
+  }
+
+  res.json({
+    logado: true,
+    usuario: req.session.usuario
+  });
+});
+
 // START
 const PORT = process.env.PORT
             || 3000;
 app.listen(PORT, () => {
-  console.log(`Porta ${PORT}`);
+  console.log(`Hospital rodando em http://localhost:3000`);
 });
