@@ -5,13 +5,12 @@
 </head>
 <body>
 <div class="container">
-  
   <h2>Sistema Hospital</h2>
-  
   <input id="usuario" placeholder="Usuário">
   <input id="senha" type="password" placeholder="Senha">
   <button onclick="login()">Entrar</button>
 </div>
+
 <script>
 function login() {
   fetch("/login", {
