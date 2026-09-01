@@ -5,14 +5,16 @@
       "usuario": "Admin",
       "senha": "123",
       "tipo": "admin"
+    },
+    {
+      "id": 1787312531577,
+      "usuario": "Claudio",
+      "senha": "212",
+      "tipo": "medico"
     }
   ],
-  "pacientes": [
-  ],
-  "triagens": [
-  ],
-  "tv_chamada": {
-  },
-  "tv_historico": [
-  ]
+  "pacientes": [],
+  "triagens": [],
+  "tv_chamada": {},
+  "tv_historico": []
 }
