@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<body>
+  <div class="container admin-container">
+    <button class="btn-sair" onclick="sair()">
+      ← Sair
+    </button>
+    <h2>Administração de Usuários</h2>
+    <div class="admin-form">
+      <input id="usuario" placeholder="Usuário">
+      <input id="senha" type="password" placeholder="Senha">
+      <select id="tipo">
+        <option value="atendimento">Atendimento</option>
+        <option value="triagem">Triagem</option>
+        <option value="medico">Médico</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <button onclick="cadastrarUsuario()">
+        Cadastrar Usuário
+      </button>
+    </div>
+  </div>
+<script>
+function cadastrarUsuario() {
+  const usuario = document.getElementById("usuario").value;
+  const senha = document.getElementById("senha").value;
+  const tipo = document.getElementById("tipo").value;
+
+  fetch("/usuarios", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      usuario,
+      senha,
+      tipo
+    })
+  })
+  .then(async response => {
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.erro);
+    }
+    return data;
+  })
+  .then(data => {
+    alert("Usuário cadastrado com sucesso!");
+    document.getElementById("usuario").value = "";
+    document.getElementById("senha").value = "";
+    document.getElementById("tipo").value = "atendimento";
+  })
+  .catch(error => {
+    alert(error.message);
+  });
+}
+function sair() {
+  fetch("/logout", {
+    method: "POST"
+  })
+  .then(() => {
+    window.location.href = "index.html";
+  });
+}
+</script>
+</body>
+</body>
+</html>
