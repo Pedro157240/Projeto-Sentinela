@@ -13,6 +13,7 @@
 
 <script>
 function login() {
+
   fetch("/login", {
     method: "POST",
     headers: {
@@ -24,25 +25,33 @@ function login() {
     })
   })
   .then(async response => {
+
     const data = await response.json();
+
     if (!response.ok) {
       throw new Error(data.erro || "Erro no login");
     }
+
     return data;
   })
   .then(data => {
+
     if (data.tipo === "admin") {
       location.href = "admin.html";
     }
+
     else if (data.tipo === "triagem") {
       location.href = "triagem.html";
     }
+
     else if (data.tipo === "medico") {
       location.href = "medico.html";
     }
+
     else if (data.tipo === "atendimento") {
       location.href = "atendimento.html";
     }
+
   })
   .catch(error => {
     alert(error.message);
