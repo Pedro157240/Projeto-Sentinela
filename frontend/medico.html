@@ -6,12 +6,12 @@
 <body>
 <button class="btn-sair" onclick="sair()">← Sair</button>
 <div class="container">
-  <!-- Cabeçalho com botão da TV -->
+
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
     <h2 style="margin:0;">Painel Médico</h2>
-    <button class="btn-abrir-tv" onclick="window.open('tv.html','_blank')">📺 Abrir Tela da TV</button>
+    <button class="btn-abrir-tv" onclick="window.open('tv.html','_blank')">Abrir Tela da TV</button>
   </div>
-  <!-- Campo criado para informar o consultório e chamar o paciente na TV -->
+
   <div class="consultorio-input">
     <label>Meu Consultório:</label>
     <input type="text" id="consultorio-num" value="01">
@@ -59,7 +59,7 @@ function carregar() {
       });
     });
 }
-// Função criada para enviar o nome do paciente para a TV quando ele for chamado no consultório.
+
 function chamarNaTV(nome) {
   const consultorio = document.getElementById("consultorio-num").value || "01";
   fetch("/tv/chamar", {
@@ -130,7 +130,6 @@ function sair() {
 }
 carregar();
 carregarMedicacoes();
-// Atualiza lista automaticamente a cada 10 segundos
 setInterval(carregar, 10000);
 </script>
 </body>
