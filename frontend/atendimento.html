@@ -1,66 +1,168 @@
 <!DOCTYPE html>
-<html>
-<head><link rel="stylesheet" href="css/style.css"></head>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atendimento</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
-<button class="btn-sair" onclick="sair()">
-  ← Sair
-</button>
-<div class="container">
-<h2>Atendimento</h2>
+    <div class="container">
+        <h2>Atendimento</h2>
+        <input type="text" id="nome" placeholder="Nome completo">
+        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off">
+        <input type="text" id="rg" placeholder="00.000.000-0" maxlength="12" inputmode="numeric" autocomplete="off">
+        <input type="date"id="dataNascimento" min="1900-01-01" max="2100-12-31">
 
-<input id="nome" placeholder="Nome">
-<input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off">
+        <select id="sexo">
+            <option value="">Selecione o sexo</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Outro">Outro</option>
+            <option value="Nao informado">Prefiro não informar</option>
+        </select>
 
-<select id="tipo">
-  <option>Convenio</option>
-  <option>Particular</option>
-</select>
+        <input type="text" id="nomeMae" placeholder="Nome da mãe">
 
-<input type="file" id="foto">
+        <select id="estadoCivil">
+            <option value="">Estado civil</option>
+            <option value="Solteiro">Solteiro(a)</option>
+            <option value="Casado">Casado(a)</option>
+            <option value="Divorciado">Divorciado(a)</option>
+            <option value="Viuvo">Viúvo(a)</option>
+            <option value="Uniao estavel">União estável</option>
+        </select>
 
-<button onclick="cadastrar()">Cadastrar</button>
-</div>
+        <input type="text" id="endereco" placeholder="Endereço completo">
+        <input
+type="tel"
+id="telefone"
+placeholder="Telefone">
+        <input type="email" id="email" placeholder="E-mail">
+        <input type="tel" id="contatoEmergencia" placeholder="Contato de emergência">
 
-<script>
-function cadastrar(){
- fetch("http://localhost:3000/atendimento",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body: JSON.stringify({
-    nome: nome.value,
-    cpf: cpf.value,
-    tipo: tipo.value
-  })
- });
- alert("Paciente enviado para triagem");
-}
+        <select id="tipo">
+            <option value="Convenio">Convênio</option>
+            <option value="Particular">Particular</option>
+        </select>
 
-const cpf = document.getElementById("cpf");
+        <input type="file" id="foto" accept="image/*">
 
-cpf.addEventListener("input", function () {
-    // Remove tudo que não for número
-    let valor = this.value.replace(/\D/g, "");
+        <button type="button" id="btnCadastrar" onclick="cadastrar()">Cadastrar</button>
+    </div>
+    <script>
+        async function cadastrar() {
 
-    // Limita a 11 dígitos
-    valor = valor.substring(0, 11);
+            const nome = document.getElementById("nome").value.trim();
+            const cpf = document.getElementById("cpf").value.trim();
+            const rg = document.getElementById("rg").value.trim();
+            const dataNascimento = document.getElementById("dataNascimento").value;
+            const sexo = document.getElementById("sexo").value;
+            const nomeMae = document.getElementById("nomeMae").value.trim();
+            const estadoCivil = document.getElementById("estadoCivil").value;
+            const endereco = document.getElementById("endereco").value.trim();
+            const telefone = document.getElementById("telefone").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const contatoEmergencia = document.getElementById("contatoEmergencia").value.trim();
+            const tipo = document.getElementById("tipo").value;
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+            const dia = String(hoje.getDate()).padStart(2, "0");
 
-    // Aplica a máscara
-    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-    valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            document.getElementById("dataNascimento").max = `${ano}-${mes}-${dia}`;
 
-    this.value = valor;
-});
+            if (!nome || !cpf || !rg || !dataNascimento || !sexo || !nomeMae || !estadoCivil || !endereco || !telefone || !email || !contatoEmergencia
+            ) {
+                alert(
+                    "Preencha todos os campos obrigatórios."
+                );
+                return;
+            }
+            const botao = document.getElementById("btnCadastrar");
 
-function sair() {
+            botao.disabled = true;
+            botao.textContent = "Cadastrando...";
+            const paciente = {
+                nome: nome,
+                cpf: cpf,
+                rg: rg,
+                dataNascimento: dataNascimento,
+                sexo: sexo,
+                nomeMae: nomeMae,
+                estadoCivil: estadoCivil,
+                endereco: endereco,
+                telefone: telefone,
+                email: email,
+                contatoEmergencia: contatoEmergencia,
+                tipo: tipo
+            };
+            try {
+                const response = await fetch(
+                    "/atendimento",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(paciente)
+                    }
+                );
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(
+                        data.erro || "Erro ao cadastrar paciente."
+                    );
+                }
+                console.log(
+                    "Paciente cadastrado:", data
+                );
+                alert(
+                    "Paciente enviado para triagem!"
+                );
 
-  fetch("/logout", {
-    method: "POST"
-  })
-  .then(() => {
-    window.location.href = "index.html";
-  });
-}
-</script>
+                document.getElementById("nome").value = "";
+                document.getElementById("cpf").value = "";
+                document.getElementById("rg").value = "";
+                document.getElementById("dataNascimento").value = "";
+                document.getElementById("sexo").value = "";
+                document.getElementById("nomeMae").value = "";
+                document.getElementById("estadoCivil").value = "";
+                document.getElementById("endereco").value = "";
+                document.getElementById("telefone").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("contatoEmergencia").value = "";
+                document.getElementById("tipo").value = "Convenio";
+                document.getElementById("foto").value = "";
+            } catch (erro) {
+                console.error(
+                    "Erro ao cadastrar paciente:",
+                    erro
+                );
+                alert(
+                    "Não foi possível cadastrar o paciente.\n\n" + erro.message
+                );
+            } finally {
+                botao.disabled = false;
+                botao.textContent = "Cadastrar";
+            }
+        }
+            document.getElementById("cpf").addEventListener("input", function (e) {
+        let valor = e.target.value.replace(/\D/g, "");
+        valor = valor.substring(0, 11);
+        valor = valor.replace(/^(\d{3})(\d)/, "$1.$2");
+        valor = valor.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
+        valor = valor.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
+        e.target.value = valor;
+    });
+    document.getElementById("rg").addEventListener("input", function (e) {
+        let valor = e.target.value.replace(/\D/g, "");
+        valor = valor.substring(0, 9);
+        valor = valor.replace(/^(\d{2})(\d)/, "$1.$2");
+        valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+        valor = valor.replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
+        e.target.value = valor;
+    });
+    </script>
 </body>
 </html>
