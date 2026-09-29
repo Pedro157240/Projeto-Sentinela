@@ -50,6 +50,7 @@
   <button onclick="salvar()">Salvar Triagem</button>
 </div>
 <script>
+let pacienteSelecionadoId = null;
 function carregarPacientes() {
   fetch("/pacientes")
     .then(r => r.json())
@@ -64,24 +65,59 @@ function carregarPacientes() {
         return;
       }
       div.innerHTML = "";
-      fila.forEach(p => {
-        const item = document.createElement("div");
-        item.className = "fila-item";
-        item.innerHTML = `
-          <div>
-            <strong>${p.nome}</strong><br>
-            <small>CPF: ${p.cpf || "—"} | Tipo: ${p.tipo || "—"}</small>
-          </div>
-          <button class="btn-tv" onclick="chamarNaTV('${p.nome}')">📺 Chamar na TV</button>
-        `;
-        div.appendChild(item);
-      });
+fila.forEach(p => {
+  const item = document.createElement("div");
+  item.className = "fila-item";
+
+  item.innerHTML = `
+    <div>
+      <strong>${p.nome}</strong><br>
+      <small>CPF: ${p.cpf || "—"} | Tipo: ${p.tipo || "—"}</small>
+    </div>
+
+    <div style="display:flex; gap:8px;">
+
+      <button
+        type="button"
+        onclick="selecionarPaciente(${p.id}, '${p.nome.replace(/'/g, "\\'")}')"
+      >
+        Selecionar
+      </button>
+
+      <button
+        type="button"
+        class="btn-tv"
+        onclick="chamarNaTV('${p.nome.replace(/'/g, "\\'")}')"
+      >
+        📺 Chamar na TV
+      </button>
+
+    </div>
+  `;
+
+  div.appendChild(item);
+});
+
     })
     .catch(() => {
       document.getElementById("fila-pacientes").innerHTML =
         "<p style='color:red;'>Erro ao carregar pacientes.</p>";
     });
 }
+
+function selecionarPaciente(id, nome) {
+
+  pacienteSelecionadoId = id;
+
+  document.getElementById("nome").value = nome;
+
+  document.getElementById("resultado").innerHTML =
+    "Paciente selecionado: <strong>" + nome + "</strong>";
+
+  document.getElementById("resultado").className = "";
+
+}
+
 // Função criada para enviar o nome do paciente para a TV quando ele for chamado no guichê.
 function chamarNaTV(nome) {
   fetch("/tv/chamar", {
@@ -107,23 +143,153 @@ function classificarRisco(sintoma, temperatura) {
   return "verde";
 }
 function salvar() {
-  const nome = document.getElementById("nome").value;
-  const sintoma = document.getElementById("sintoma").value;
-  const temperatura = Number(document.getElementById("temp").value);
-  const alergia = document.getElementById("alergia").value;
-  const observacao = document.getElementById("observacao").value;
-  const risco = classificarRisco(sintoma, temperatura);
+
+  if (!pacienteSelecionadoId) {
+
+    alert("Selecione um paciente da fila antes de salvar a triagem.");
+
+    return;
+  }
+
+  const nome =
+    document.getElementById("nome").value;
+
+  const sintoma =
+    document.getElementById("sintoma").value;
+
+  const temperatura =
+    Number(document.getElementById("temp").value);
+
+  const alergia =
+    document.getElementById("alergia").value;
+
+  const observacao =
+    document.getElementById("observacao").value;
+
+  if (!sintoma) {
+
+    alert("Selecione o sintoma.");
+
+    return;
+  }
+
+  const risco =
+    classificarRisco(
+      sintoma,
+      temperatura
+    );
+
   fetch("/triagem", {
+
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nome, sintoma, temperatura, alergia, observacao, risco })
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+      pacienteId:
+        pacienteSelecionadoId,
+
+      nome:
+        nome,
+
+      sintoma:
+        sintoma,
+
+      temperatura:
+        temperatura,
+
+      alergia:
+        alergia,
+
+      observacao:
+        observacao,
+
+      risco:
+        risco
+
+    })
+
   })
-  .then(r => r.json())
+
+  .then(async r => {
+
+    const data = await r.json();
+
+    if (!r.ok) {
+
+      throw new Error(
+        data.erro ||
+        "Erro ao salvar triagem."
+      );
+
+    }
+
+    return data;
+
+  })
+
   .then(data => {
-    const resultado = document.getElementById("resultado");
-    resultado.className = risco;
-    resultado.innerHTML = "Classificação: " + risco.toUpperCase();
-    alert("Triagem salva com sucesso!");
+
+    const resultado =
+      document.getElementById("resultado");
+
+    resultado.className =
+      data.triagem.risco;
+
+    resultado.innerHTML =
+      "Classificação: " +
+      data.triagem.risco.toUpperCase();
+
+    alert(
+      "✅ Triagem salva com sucesso!"
+    );
+
+    /*
+     * Limpa o formulário
+     */
+
+    document.getElementById("nome").value = "";
+
+    document.getElementById("sintoma").value = "";
+
+    document.getElementById("temp").value = "";
+
+    document.getElementById("alergia").value = "";
+
+    document.getElementById("observacao").value = "";
+
+    /*
+     * Esquece o paciente selecionado
+     */
+
+    pacienteSelecionadoId = null;
+
+    /*
+     * Atualiza a fila.
+     *
+     * O paciente agora está com status
+     * "aguardando_medico", então ele
+     * desaparecerá da fila de triagem.
+     */
+
+    carregarPacientes();
+
+  })
+
+  .catch(erro => {
+
+    console.error(
+      "Erro ao salvar triagem:",
+      erro
+    );
+
+    alert(
+      erro.message
+    );
+
   });
 }
 function sair() {
