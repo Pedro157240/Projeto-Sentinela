@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const PDFDocument = require("pdfkit");
 const cors = require("cors");
 const session = require("express-session");
 
@@ -24,7 +25,9 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 const DB_FILE = path.join(__dirname, "db.json");
 
 function readDB() {
+
   if (!fs.existsSync(DB_FILE)) {
+
     return {
       usuarios: [],
       pacientes: [],
@@ -33,10 +36,42 @@ function readDB() {
       tv_chamada: null,
       tv_historico: []
     };
+
   }
-  const db = JSON.parse(fs.readFileSync(DB_FILE));
-  if (!db.tv_chamada) db.tv_chamada = null;
-  if (!db.tv_historico) db.tv_historico = [];
+
+  const db =
+    JSON.parse(
+      fs.readFileSync(DB_FILE, "utf8")
+    );
+
+
+  // Garantir que os arrays existam
+
+  if (!Array.isArray(db.usuarios)) {
+    db.usuarios = [];
+  }
+
+  if (!Array.isArray(db.pacientes)) {
+    db.pacientes = [];
+  }
+
+  if (!Array.isArray(db.triagens)) {
+    db.triagens = [];
+  }
+
+  if (!Array.isArray(db.consultas)) {
+    db.consultas = [];
+  }
+
+  if (!db.tv_chamada) {
+    db.tv_chamada = null;
+  }
+
+  if (!Array.isArray(db.tv_historico)) {
+    db.tv_historico = [];
+  }
+
+
   return db;
 }
 
@@ -76,14 +111,29 @@ app.post("/atendimento", (req, res) => {
 
   const paciente = {
     id: Date.now(),
+
     nome: req.body.nome,
     cpf: req.body.cpf,
+    rg: req.body.rg,
+    dataNascimento: req.body.dataNascimento,
+    sexo: req.body.sexo,
+    nomeMae: req.body.nomeMae,
+    estadoCivil: req.body.estadoCivil,
+    endereco: req.body.endereco,
+    telefone: req.body.telefone,
+    email: req.body.email,
+    contatoEmergencia: req.body.contatoEmergencia,
     tipo: req.body.tipo,
+
     status: "triagem",
-    createdAt: new Date()
+
+    createdAt: new Date(),
+
+    alta: null
   };
 
   db.pacientes.push(paciente);
+
   writeDB(db);
 
   res.json(paciente);
@@ -95,37 +145,205 @@ app.get("/pacientes", (req, res) => {
   res.json(db.pacientes);
 });
 
+// BUSCAR PACIENTE PELO ID
+app.get("/pacientes/:id", (req, res) => {
+  const db = readDB();
+  const id = Number(req.params.id);
+  const paciente = db.pacientes.find(
+    p => p.id === id
+  );
+  if (!paciente) {
+    return res.status(404).json({
+      erro: "Paciente não encontrado."
+    });
+  }
+  res.json(paciente);
+});
+
+
+// ==========================================
 // TRIAGEM
+// ==========================================
+
 app.post("/triagem", (req, res) => {
+
   const db = readDB();
 
-  let risco = req.body.risco;
 
-  if (req.body.temperatura >= 39) {
-    risco = "vermelho";
-  } else if (req.body.temperatura >= 38) {
-    risco = "amarelo";
-  } else if (!risco) {
-    risco = "verde";
+  // ==========================================
+  // DADOS RECEBIDOS
+  // ==========================================
+
+  const pacienteId =
+    Number(req.body.pacienteId);
+
+  const nome =
+    req.body.nome;
+
+  const sintoma =
+    req.body.sintoma;
+
+  const temperatura =
+    req.body.temperatura;
+
+  const alergia =
+    req.body.alergia || "";
+
+  const observacao =
+    req.body.observacao || "";
+
+
+  // ==========================================
+  // VALIDAR PACIENTE
+  // ==========================================
+
+  if (!pacienteId) {
+
+    return res.status(400).json({
+      erro: "Paciente não informado."
+    });
+
   }
 
+
+  const paciente =
+    db.pacientes.find(
+      p => p.id === pacienteId
+    );
+
+
+  if (!paciente) {
+
+    return res.status(404).json({
+      erro: "Paciente não encontrado."
+    });
+
+  }
+
+
+  // ==========================================
+  // VERIFICAR STATUS
+  // ==========================================
+
+  if (paciente.status !== "triagem") {
+
+    return res.status(400).json({
+      erro:
+        "Este paciente não está aguardando triagem."
+    });
+
+  }
+
+
+  // ==========================================
+  // CLASSIFICAÇÃO DE RISCO
+  // ==========================================
+
+  let risco =
+    req.body.risco;
+
+
+  if (temperatura >= 39) {
+
+    risco = "vermelho";
+
+  }
+
+  else if (temperatura >= 38) {
+
+    risco = "amarelo";
+
+  }
+
+  else if (!risco) {
+
+    risco = "verde";
+
+  }
+
+
+  // ==========================================
+  // CRIAR TRIAGEM
+  // ==========================================
+
   const triagem = {
-    id: Date.now(),
-    nome: req.body.nome,
-    sintoma: req.body.sintoma,
-    temperatura: req.body.temperatura,
-    alergia: req.body.alergia,
-    observacao: req.body.observacao,
-    risco,
-    status: "aguardando_medico",
-    createdAt: new Date()
+
+    id:
+      Date.now(),
+
+    pacienteId:
+      paciente.id,
+
+    nome:
+      paciente.nome,
+
+    sintoma:
+      sintoma,
+
+    temperatura:
+      temperatura,
+
+    alergia:
+      alergia,
+
+    observacao:
+      observacao,
+
+    risco:
+      risco,
+
+    status:
+      "aguardando_medico",
+
+    createdAt:
+      new Date()
+
   };
 
-  db.triagens.push(triagem);
+
+  // ==========================================
+  // SALVAR TRIAGEM
+  // ==========================================
+
+  db.triagens.push(
+    triagem
+  );
+
+
+  /*
+   * Agora o paciente deixa de estar
+   * aguardando triagem.
+   *
+   * Isso faz com que ele desapareça
+   * da fila do triagem.html.
+   */
+
+  paciente.status =
+    "aguardando_medico";
+
+
   writeDB(db);
 
-  res.json(triagem);
+
+  // ==========================================
+  // RESPONDER
+  // ==========================================
+
+  res.json({
+
+    mensagem:
+      "Triagem salva com sucesso.",
+
+    triagem:
+      triagem,
+
+    paciente:
+      paciente
+
+  });
+
 });
+
 
 // LISTAR TRIAGENS
 app.get("/triagens", (req, res) => {
@@ -184,22 +402,103 @@ app.get("/lista-medicacoes", (req, res) => {
 
 // CONSULTA
 app.post("/consulta", (req, res) => {
+
   const db = readDB();
 
+  const pacienteNome =
+    req.body.paciente;
+
+  const diagnostico =
+    req.body.diagnostico || "";
+
+  const medicacao =
+    req.body.medicacao || "";
+
+  const obs =
+    req.body.obs || "";
+
+
+  if (!pacienteNome) {
+
+    return res.status(400).json({
+      erro: "Paciente não informado."
+    });
+
+  }
+
+
+  /*
+   * Procura o paciente pelo nome.
+   */
+
+  const paciente =
+    db.pacientes.find(
+      p => p.nome === pacienteNome
+    );
+
+
+  if (!paciente) {
+
+    return res.status(404).json({
+      erro: "Paciente não encontrado."
+    });
+
+  }
+
+
+  /*
+   * Cria a consulta.
+   */
+
   const consulta = {
+
     id: Date.now(),
-    paciente: req.body.paciente,
-    diagnostico: req.body.diagnostico,
-    medicacao: req.body.medicacao,
-    obs: req.body.obs,
+
+    paciente: paciente.nome,
+
+    pacienteId: paciente.id,
+
+    diagnostico: diagnostico,
+
+    medicacao: medicacao,
+
+    obs: obs,
+
     createdAt: new Date()
+
   };
 
+
   db.consultas.push(consulta);
+
+
+  /*
+   * O paciente terminou a consulta
+   * e agora pode seguir para a alta.
+   */
+
+  paciente.status =
+    "aguardando_alta";
+
+
   writeDB(db);
 
-  res.json(consulta);
+
+  res.json({
+
+    mensagem:
+      "Consulta salva com sucesso.",
+
+    consulta:
+      consulta,
+
+    paciente:
+      paciente
+
+  });
+
 });
+
 
 // ADMIN
 app.post("/usuarios", (req, res) => {
@@ -256,6 +555,52 @@ app.get("/medicacoes", (req, res) => {
   res.json(db.consultas);
 });
 
+// REGISTRAR ALTA
+
+app.post("/alta", (req, res) => {
+  const db = readDB();
+  const pacienteId = Number(req.body.pacienteId);
+  const dataAlta = req.body.dataAlta;
+  const observacoes = req.body.observacoes || "";
+
+  if (!pacienteId) {
+    return res.status(400).json({
+      erro: "Paciente não informado."
+    });
+  }
+  if (!dataAlta) {
+    return res.status(400).json({
+      erro: "Data da alta não informada."
+    });
+  }
+  const paciente =
+    db.pacientes.find(p => p.id === pacienteId);
+  if (!paciente) {
+    return res.status(404).json({
+      erro: "Paciente não encontrado."
+    });
+  }
+
+  if (paciente.status === "alta") {
+    return res.status(400).json({
+      erro: "Este paciente já recebeu alta."
+    });
+  }
+
+  paciente.status = "alta";
+  paciente.alta = {
+    dataAlta: dataAlta,
+    observacoes: observacoes,
+    registradaEm: new Date()
+  };
+  writeDB(db);
+  res.json({
+    mensagem:
+      "Alta registrada com sucesso.",
+    paciente: paciente
+  });
+});
+
 // FINALIZAR SESSÃO
 app.post("/logout", (req, res) => {
   req.session.destroy(err => {
@@ -283,6 +628,361 @@ app.get("/sessao", (req, res) => {
     logado: true,
     usuario: req.session.usuario
   });
+});
+
+// GERAR PDF DA ALTA
+app.get("/alta/:id/pdf", (req, res) => {
+  const db = readDB();
+  const pacienteId = Number(req.params.id);
+  const paciente =
+    db.pacientes.find(p => p.id === pacienteId);
+  if (!paciente) {
+
+    return res.status(404).json({
+      erro: "Paciente não encontrado."
+    });
+
+  }
+
+
+  /*
+   * IMPORTANTE:
+   *
+   * O PDF somente pode ser gerado
+   * se a alta já tiver sido registrada.
+   */
+
+  if (
+    paciente.status !== "alta" ||
+    !paciente.alta
+  ) {
+
+    return res.status(400).json({
+      erro:
+        "A alta deste paciente ainda não foi registrada."
+    });
+
+  }
+
+
+  /*
+   * Procura a triagem pelo nome.
+   *
+   * Seu sistema atual salva a triagem pelo nome,
+   * então fazemos a associação dessa maneira.
+   */
+
+  const triagem =
+    [...db.triagens]
+      .reverse()
+      .find(
+        t => t.nome === paciente.nome
+      );
+
+
+  /*
+   * Procura a consulta médica pelo nome.
+   */
+
+  const consulta =
+    [...db.consultas]
+      .reverse()
+      .find(
+        c => c.paciente === paciente.nome
+      );
+
+
+  /*
+   * Cria o documento PDF.
+   */
+
+  const doc =
+    new PDFDocument({
+      size: "A4",
+      margin: 50
+    });
+
+
+  /*
+   * Nome do arquivo.
+   */
+
+  const nomeArquivo =
+    `alta_${paciente.cpf || paciente.id}.pdf`;
+
+
+  /*
+   * Cabeçalhos da resposta.
+   */
+
+  res.setHeader(
+    "Content-Type",
+    "application/pdf"
+  );
+
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${nomeArquivo}"`
+  );
+
+
+  /*
+   * Envia o PDF diretamente
+   * para o navegador.
+   */
+
+  doc.pipe(res);
+
+
+  // ==========================================
+  // CABEÇALHO
+  // ==========================================
+
+  doc
+    .fontSize(20)
+    .font("Helvetica-Bold")
+    .text(
+      "DOCUMENTO DE ALTA DO PACIENTE",
+      {
+        align: "center"
+      }
+    );
+
+
+  doc.moveDown();
+
+
+  doc
+    .fontSize(10)
+    .font("Helvetica")
+    .text(
+      `Emitido em: ${new Date().toLocaleString("pt-BR")}`,
+      {
+        align: "center"
+      }
+    );
+
+
+  doc.moveDown(2);
+
+
+  // ==========================================
+  // DADOS DO PACIENTE
+  // ==========================================
+
+  doc
+    .fontSize(14)
+    .font("Helvetica-Bold")
+    .text("DADOS DO PACIENTE");
+
+
+  doc.moveDown();
+
+
+  doc
+    .fontSize(11)
+    .font("Helvetica");
+
+
+  doc.text(
+    `Nome completo: ${paciente.nome || "Não informado"}`
+  );
+
+  doc.text(
+    `CPF: ${paciente.cpf || "Não informado"}`
+  );
+
+  doc.text(
+    `RG: ${paciente.rg || "Não informado"}`
+  );
+
+  doc.text(
+    `Data de nascimento: ${paciente.dataNascimento || "Não informado"}`
+  );
+
+  doc.text(
+    `Sexo: ${paciente.sexo || "Não informado"}`
+  );
+
+  doc.text(
+    `Nome da mãe: ${paciente.nomeMae || "Não informado"}`
+  );
+
+  doc.text(
+    `Estado civil: ${paciente.estadoCivil || "Não informado"}`
+  );
+
+  doc.text(
+    `Endereço: ${paciente.endereco || "Não informado"}`
+  );
+
+  doc.text(
+    `Telefone: ${paciente.telefone || "Não informado"}`
+  );
+
+  doc.text(
+    `E-mail: ${paciente.email || "Não informado"}`
+  );
+
+  doc.text(
+    `Contato de emergência: ${paciente.contatoEmergencia || "Não informado"}`
+  );
+
+  doc.text(
+    `Tipo de atendimento: ${paciente.tipo || "Não informado"}`
+  );
+
+
+  // ==========================================
+  // TRIAGEM
+  // ==========================================
+
+  if (triagem) {
+
+    doc.moveDown(2);
+
+    doc
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text("TRIAGEM");
+
+    doc.moveDown();
+
+    doc
+      .fontSize(11)
+      .font("Helvetica");
+
+    doc.text(
+      `Sintoma: ${triagem.sintoma || "Não informado"}`
+    );
+
+    doc.text(
+      `Temperatura: ${
+        triagem.temperatura || "Não informado"
+      }`
+    );
+
+    doc.text(
+      `Alergias: ${
+        triagem.alergia || "Não informado"
+      }`
+    );
+
+    doc.text(
+      `Classificação de risco: ${
+        triagem.risco || "Não informado"
+      }`
+    );
+
+    doc.text(
+      `Observação da triagem: ${
+        triagem.observacao || "Não informado"
+      }`
+    );
+
+  }
+
+
+  // ==========================================
+  // CONSULTA MÉDICA
+  // ==========================================
+
+  if (consulta) {
+
+    doc.moveDown(2);
+
+    doc
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text("CONSULTA MÉDICA");
+
+    doc.moveDown();
+
+    doc
+      .fontSize(11)
+      .font("Helvetica");
+
+    doc.text(
+      `Diagnóstico: ${
+        consulta.diagnostico || "Não informado"
+      }`
+    );
+
+    doc.text(
+      `Medicação: ${
+        consulta.medicacao || "Não informado"
+      }`
+    );
+
+    doc.text(
+      `Observações: ${
+        consulta.obs || "Não informado"
+      }`
+    );
+
+  }
+
+
+  // ==========================================
+  // ALTA
+  // ==========================================
+
+  doc.moveDown(2);
+
+  doc
+    .fontSize(14)
+    .font("Helvetica-Bold")
+    .text("INFORMAÇÕES DA ALTA");
+
+  doc.moveDown();
+
+  doc
+    .fontSize(11)
+    .font("Helvetica");
+
+
+  const dataAlta =
+    new Date(
+      paciente.alta.dataAlta
+    ).toLocaleString("pt-BR");
+
+
+  doc.text(
+    `Data e hora da alta: ${dataAlta}`
+  );
+
+
+  doc.text(
+    `Observações da alta: ${
+      paciente.alta.observacoes ||
+      "Nenhuma observação informada."
+    }`
+  );
+
+
+  // ==========================================
+  // RODAPÉ
+  // ==========================================
+
+  doc.moveDown(4);
+
+  doc
+    .fontSize(9)
+    .fillColor("#666")
+    .text(
+      "Documento gerado automaticamente pelo sistema hospitalar.",
+      {
+        align: "center"
+      }
+    );
+
+
+  /*
+   * Finaliza o PDF.
+   */
+
+  doc.end();
+
 });
 
 // START
