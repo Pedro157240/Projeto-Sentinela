@@ -7,9 +7,11 @@
 <button class="btn-sair" onclick="sair()">← Sair</button>
 <div class="container">
   <h2>Medicações Prescritas</h2>
+  <!-- IMPLEMENTADO: local onde a lista de medicações será exibida -->
   <div id="listaMedicacoes"></div>
 </div>
 <script>
+// IMPLEMENTADO: busca as consultas salvas e mostra as medicações
 function carregarMedicacoesPrescritas() {
   fetch("/medicacoes")
     .then(r => r.json())
