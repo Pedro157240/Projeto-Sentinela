@@ -26,39 +26,129 @@
     <option value="">Selecione a medicação</option>
   </select>
   <textarea id="obs" placeholder="Observações"></textarea>
+  <button onclick="irParaAlta()">Alta</button>
   <button onclick="salvar()">Salvar</button>
 </div>
 <script>
 let triagensCarregadas = [];
 function carregar() {
+
   fetch("/triagens")
-    .then(r => r.json())
+
+    .then(async r => {
+
+      if (!r.ok) {
+        throw new Error("Não foi possível carregar as triagens.");
+      }
+
+      return await r.json();
+
+    })
+
     .then(data => {
-      triagensCarregadas = data;
-      const div = document.getElementById("triagens");
+
+      /*
+       * Guarda somente as triagens que
+       * estão aguardando atendimento médico.
+       */
+
+      triagensCarregadas =
+        data.filter(t =>
+          t.status === "aguardando_medico"
+        );
+
+      const div =
+        document.getElementById("triagens");
+
       div.innerHTML = "";
-      if (data.length === 0) {
-        div.innerHTML = "<p style='color:#888; text-align:center;'>Nenhum paciente na fila.</p>";
+
+      if (triagensCarregadas.length === 0) {
+
+        div.innerHTML =
+          "<p style='color:#888; text-align:center;'>" +
+          "Nenhum paciente aguardando atendimento médico." +
+          "</p>";
+
         return;
       }
-      data.forEach((t, index) => {
+
+      triagensCarregadas.forEach((t, index) => {
+
         div.innerHTML += `
+
           <div class="card">
-            <h3>${t.nome}</h3>
-            <p><b>Sintoma:</b> ${t.sintoma || "Não informado"}</p>
-            <p><b>Temperatura:</b> ${t.temperatura || "Não informada"}°C</p>
-            <p><span class="${t.risco}">${t.risco}</span></p>
-            <p><b>Alergia:</b> ${t.alergia || "Nenhuma"}</p>
-            <p><b>Observação:</b> ${t.observacao || "Nenhuma"}</p>
+
+            <h3>
+              ${t.nome}
+            </h3>
+
+            <p>
+              <b>Sintoma:</b>
+              ${t.sintoma || "Não informado"}
+            </p>
+
+            <p>
+              <b>Temperatura:</b>
+              ${t.temperatura || "Não informada"}°C
+            </p>
+
+            <p>
+              <b>Classificação:</b>
+              <span class="${t.risco}">
+                ${t.risco || "Não informado"}
+              </span>
+            </p>
+
+            <p>
+              <b>Alergia:</b>
+              ${t.alergia || "Nenhuma"}
+            </p>
+
+            <p>
+              <b>Observação:</b>
+              ${t.observacao || "Nenhuma"}
+            </p>
+
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button onclick="selecionar(${index})">Atender</button>
-              <button class="btn-tv" onclick="chamarNaTV('${t.nome}')">📺 Chamar na TV</button>
+
+              <button
+                onclick="selecionar(${index})"
+              >
+                Atender
+              </button>
+
+              <button
+                class="btn-tv"
+                onclick="chamarNaTV('${t.nome.replace(/'/g, "\\'")}')"
+              >
+                📺 Chamar na TV
+              </button>
+
             </div>
+
           </div>
+
         `;
+
       });
+
+    })
+
+    .catch(erro => {
+
+      console.error(
+        "Erro ao carregar triagens:",
+        erro
+      );
+
+      document.getElementById("triagens").innerHTML =
+        "<p style='color:red; text-align:center;'>" +
+        "Erro ao carregar pacientes." +
+        "</p>";
+
     });
 }
+
 
 function chamarNaTV(nome) {
   const consultorio = document.getElementById("consultorio-num").value || "01";
@@ -111,6 +201,7 @@ function salvar() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ paciente, diagnostico, medicacao, obs })
   })
+
   .then(r => r.json())
   .then(() => {
     alert("Consulta salva");
@@ -118,6 +209,9 @@ function salvar() {
     document.getElementById("medicacao").value = "";
     document.getElementById("obs").value = "";
   });
+}
+function irParaAlta() {
+  window.location.href = "alta.html";
 }
 function sair() {
 
