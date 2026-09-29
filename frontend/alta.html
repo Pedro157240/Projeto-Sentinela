@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Alta do Paciente</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+
+        .dados-paciente {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .dados-paciente h3 {
+            margin-bottom: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .campo {
+            margin-bottom: 15px;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .campo input,
+        .campo textarea,
+        .campo select {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .botoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-alta {
+            background: #198754;
+            color: white;
+        }
+
+        .btn-pdf {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .btn-pdf:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .status-alta {
+            margin-top: 15px;
+            padding: 12px;
+            background: #d1e7dd;
+            color: #0f5132;
+            border-radius: 5px;
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .botoes {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Alta do Paciente</h2>
+
+    <!-- SELEÇÃO DO PACIENTE -->
+
+    <div class="campo">
+
+        <label for="paciente">
+            Selecionar paciente
+        </label>
+
+        <select id="paciente">
+
+            <option value="">
+                Selecione um paciente
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- DADOS DO PACIENTE -->
+
+    <div class="dados-paciente">
+
+        <h3>Dados do paciente</h3>
+
+        <div class="grid">
+
+            <div class="campo">
+
+                <label>Nome completo</label>
+
+                <input
+                    type="text"
+                    id="nome"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>CPF</label>
+
+                <input
+                    type="text"
+                    id="cpf"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>RG</label>
+
+                <input
+                    type="text"
+                    id="rg"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Data de nascimento</label>
+
+                <input
+                    type="text"
+                    id="dataNascimento"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Sexo</label>
+
+                <input
+                    type="text"
+                    id="sexo"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Nome da mãe</label>
+
+                <input
+                    type="text"
+                    id="nomeMae"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Estado civil</label>
+
+                <input
+                    type="text"
+                    id="estadoCivil"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Telefone</label>
+
+                <input
+                    type="text"
+                    id="telefone"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>E-mail</label>
+
+                <input
+                    type="text"
+                    id="email"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Contato de emergência</label>
+
+                <input
+                    type="text"
+                    id="contatoEmergencia"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Tipo de atendimento</label>
+
+                <input
+                    type="text"
+                    id="tipo"
+                    readonly
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>Endereço</label>
+
+                <input
+                    type="text"
+                    id="endereco"
+                    readonly
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DADOS DA ALTA -->
+
+    <div class="dados-paciente">
+
+        <h3>Informações da alta</h3>
+
+        <div class="campo">
+
+            <label for="dataAlta">
+                Data e hora da alta
+            </label>
+
+            <input
+                type="datetime-local"
+                id="dataAlta"
+            >
+
+        </div>
+
+
+        <div class="campo">
+
+            <label for="observacoes">
+                Observações da alta
+            </label>
+
+            <textarea
+                id="observacoes"
+                placeholder="Digite as orientações e observações da alta..."
+            ></textarea>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOTÕES -->
+
+    <div class="botoes">
+
+        <button
+            type="button"
+            class="btn-alta"
+            id="btnAlta"
+            onclick="registrarAlta()">
+            Registrar Alta
+        </button>
+
+
+        <button
+            type="button"
+            class="btn-pdf"
+            id="btnPdf"
+            onclick="baixarPDF()"
+            disabled>
+            📄 Gerar e Baixar PDF
+        </button>
+
+        <button
+        type="button"
+        class="btn-voltar"
+        onclick="window.location.href='medico.html'">
+        ← Voltar para Médico
+        </button>
+
+</div>
+
+    </div>
+
+
+    <div
+        id="statusAlta"
+        class="status-alta"
+    ></div>
+
+</div>
+
+
+<script>
+
+let pacienteSelecionado = null;
+
+
+// ==========================================
+// CARREGAR PACIENTES
+// ==========================================
+
+async function carregarPacientes() {
+
+    try {
+
+        const response = await fetch("/pacientes");
+
+        if (!response.ok) {
+
+    const contentType =
+        response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+
+        const erro =
+            await response.json();
+
+        throw new Error(
+            erro.erro ||
+            "Não foi possível gerar o PDF."
+        );
+
+    }
+
+    const texto =
+        await response.text();
+
+    console.error(
+        "Resposta do servidor:",
+        texto
+    );
+
+    throw new Error(
+        "O servidor encontrou um erro ao gerar o PDF."
+    );
+}
+
+
+        const pacientes = await response.json();
+
+        const select =
+            document.getElementById("paciente");
+
+        select.innerHTML =
+            '<option value="">Selecione um paciente</option>';
+
+
+        /*
+         * Mostramos somente pacientes que
+         * ainda não receberam alta.
+         */
+
+        pacientes
+            .filter(p => p.status !== "alta")
+            .forEach(paciente => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = paciente.id;
+
+                option.textContent =
+                    `${paciente.nome} - CPF: ${paciente.cpf}`;
+
+                select.appendChild(option);
+
+            });
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Erro ao carregar pacientes."
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// SELECIONAR PACIENTE
+// ==========================================
+
+document
+    .getElementById("paciente")
+    .addEventListener("change", async function () {
+
+        const id = this.value;
+
+        limparDados();
+
+        if (!id) {
+
+            pacienteSelecionado = null;
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(`/pacientes/${id}`);
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Paciente não encontrado."
+                );
+
+            }
+
+            const paciente =
+                await response.json();
+
+            pacienteSelecionado = paciente;
+
+            preencherDados(paciente);
+
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            alert(
+                "Não foi possível carregar os dados do paciente."
+            );
+
+        }
+
+    });
+
+
+// ==========================================
+// PREENCHER DADOS
+// ==========================================
+
+function preencherDados(paciente) {
+
+    document.getElementById("nome").value =
+        paciente.nome || "";
+
+    document.getElementById("cpf").value =
+        paciente.cpf || "";
+
+    document.getElementById("rg").value =
+        paciente.rg || "";
+
+    document.getElementById("dataNascimento").value =
+        paciente.dataNascimento || "";
+
+    document.getElementById("sexo").value =
+        paciente.sexo || "";
+
+    document.getElementById("nomeMae").value =
+        paciente.nomeMae || "";
+
+    document.getElementById("estadoCivil").value =
+        paciente.estadoCivil || "";
+
+    document.getElementById("telefone").value =
+        paciente.telefone || "";
+
+    document.getElementById("email").value =
+        paciente.email || "";
+
+    document.getElementById("contatoEmergencia").value =
+        paciente.contatoEmergencia || "";
+
+    document.getElementById("tipo").value =
+        paciente.tipo || "";
+
+    document.getElementById("endereco").value =
+        paciente.endereco || "";
+
+}
+
+
+// ==========================================
+// LIMPAR DADOS
+// ==========================================
+
+function limparDados() {
+
+    const campos = [
+
+        "nome",
+        "cpf",
+        "rg",
+        "dataNascimento",
+        "sexo",
+        "nomeMae",
+        "estadoCivil",
+        "telefone",
+        "email",
+        "contatoEmergencia",
+        "tipo",
+        "endereco"
+
+    ];
+
+    campos.forEach(id => {
+
+        document.getElementById(id).value = "";
+
+    });
+
+}
+
+
+// ==========================================
+// REGISTRAR ALTA
+// ==========================================
+
+async function registrarAlta() {
+
+    if (!pacienteSelecionado) {
+
+        alert(
+            "Selecione um paciente."
+        );
+
+        return;
+
+    }
+
+
+    const dataAlta =
+        document.getElementById("dataAlta").value;
+
+    const observacoes =
+        document.getElementById("observacoes").value.trim();
+
+
+    if (!dataAlta) {
+
+        alert(
+            "Informe a data e hora da alta."
+        );
+
+        return;
+
+    }
+
+
+    const botao =
+        document.getElementById("btnAlta");
+
+    botao.disabled = true;
+
+    botao.textContent =
+        "Registrando...";
+
+
+    try {
+
+        const response =
+            await fetch("/alta", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    pacienteId:
+                        pacienteSelecionado.id,
+
+                    dataAlta:
+                        dataAlta,
+
+                    observacoes:
+                        observacoes
+
+                })
+
+            });
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.erro ||
+                "Erro ao registrar alta."
+            );
+
+        }
+
+
+        /*
+         * Atualiza o paciente localmente.
+         */
+
+        pacienteSelecionado =
+            data.paciente;
+
+
+        /*
+         * Somente agora liberamos
+         * o botão do PDF.
+         */
+
+        document.getElementById("btnPdf").disabled =
+            false;
+
+
+        const status =
+            document.getElementById("statusAlta");
+
+        status.style.display =
+            "block";
+
+        status.innerHTML =
+            "✅ Alta registrada com sucesso! " +
+            "Agora o PDF pode ser gerado.";
+
+
+        alert(
+            "Alta registrada com sucesso!"
+        );
+
+
+        /*
+         * Atualiza a lista de pacientes.
+         */
+
+        carregarPacientes();
+
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            erro.message
+        );
+
+    } finally {
+
+        botao.disabled = false;
+
+        botao.textContent =
+            "Registrar Alta";
+
+    }
+
+}
+
+
+// ==========================================
+// BAIXAR PDF
+// ==========================================
+
+async function baixarPDF() {
+
+    if (!pacienteSelecionado) {
+
+        alert(
+            "Selecione um paciente."
+        );
+
+        return;
+
+    }
+
+
+    const botao =
+        document.getElementById("btnPdf");
+
+    botao.disabled = true;
+
+    botao.textContent =
+        "Gerando PDF...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/alta/${pacienteSelecionado.id}/pdf`
+            );
+        if (!response.ok) {
+            const erro = await response.json();
+
+            throw new Error(erro.erro ||"Não foi possível gerar o PDF.");
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = `alta_${pacienteSelecionado.cpf}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        window.URL.revokeObjectURL(url);
+    } catch (erro) {
+        console.error(erro);
+        alert(erro.message);
+    } finally {
+        botao.disabled = false;
+        botao.textContent = "📄 Gerar e Baixar PDF";
+    }
+}
+// DATA/HORA ATUAL
+
+function definirDataAtual() {
+
+    const agora = new Date();
+    const ano = agora.getFullYear();
+    const mes = String(agora.getMonth() + 1).padStart(2, "0");
+    const dia = String(agora.getDate()).padStart(2, "0");
+    const hora = String(agora.getHours()).padStart(2, "0");
+    const minuto = String(agora.getMinutes()).padStart(2, "0");
+
+    document.getElementById("dataAlta").value = `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+}
+// Inicialização
+definirDataAtual();
+carregarPacientes();
+</script>
+</body>
+</html>
