@@ -11,10 +11,134 @@
       "usuario": "Claudio",
       "senha": "212",
       "tipo": "medico"
+    },
+    {
+      "id": 1788266223289,
+      "usuario": "Claudia",
+      "senha": "121",
+      "tipo": "atendimento"
+    },
+    {
+      "id": 1789126532349,
+      "usuario": "Claudie",
+      "senha": "122",
+      "tipo": "triagem"
     }
   ],
-  "pacientes": [],
-  "triagens": [],
-  "tv_chamada": {},
-  "tv_historico": []
+  "pacientes": [
+    {
+      "id": 1789126366118,
+      "nome": "Pedro",
+      "cpf": "000.000.000-00",
+      "rg": "00.000.000-0",
+      "dataNascimento": "2000-10-16",
+      "sexo": "Masculino",
+      "nomeMae": "Bruna",
+      "estadoCivil": "Solteiro",
+      "endereco": "Ali",
+      "telefone": "0000000000000",
+      "email": "email@email.com",
+      "contatoEmergencia": "0000000000",
+      "tipo": "Particular",
+      "status": "alta",
+      "createdAt": "2026-09-11T11:32:46.118Z",
+      "alta": {
+        "dataAlta": "2026-09-15T09:04",
+        "observacoes": "",
+        "registradaEm": "2026-09-15T12:04:34.279Z"
+      }
+    },
+    {
+      "id": 1789475911185,
+      "nome": "Cesar",
+      "cpf": "000.000.000-00",
+      "rg": "00.000.000-0",
+      "dataNascimento": "1000-12-12",
+      "sexo": "Masculino",
+      "nomeMae": "Guria",
+      "estadoCivil": "Solteiro",
+      "endereco": "a",
+      "telefone": "000000000",
+      "email": "peeeeeee",
+      "contatoEmergencia": "0000000000",
+      "tipo": "Particular",
+      "status": "triagem",
+      "createdAt": "2026-09-15T12:38:31.185Z",
+      "alta": null
+    },
+    {
+      "id": 1789476199714,
+      "nome": "Liz",
+      "cpf": "000.000.000-00",
+      "rg": "00.000.000-0",
+      "dataNascimento": "2008-10-22",
+      "sexo": "Feminino",
+      "nomeMae": "Eliane",
+      "estadoCivil": "Casado",
+      "endereco": "a",
+      "telefone": "33333333336",
+      "email": "llllllllllllllllz",
+      "contatoEmergencia": "4444444444447",
+      "tipo": "Particular",
+      "status": "alta",
+      "createdAt": "2026-09-15T12:43:19.714Z",
+      "alta": {
+        "dataAlta": "2026-09-15T09:43",
+        "observacoes": "",
+        "registradaEm": "2026-09-15T12:44:00.121Z"
+      }
+    }
+  ],
+  "triagens": [
+    {
+      "id": 1789127091814,
+      "pacienteId": 1789126366118,
+      "nome": "Pedro",
+      "sintoma": "vomito",
+      "temperatura": 37,
+      "alergia": "Camarão",
+      "observacao": "Comeu camarão e tá vomitando",
+      "risco": "amarelo",
+      "status": "aguardando_medico",
+      "createdAt": "2026-09-11T11:44:51.814Z"
+    },
+    {
+      "id": 1789476216802,
+      "pacienteId": 1789476199714,
+      "nome": "Liz",
+      "sintoma": "coriza",
+      "temperatura": 33,
+      "alergia": "aaa",
+      "observacao": "aaaaaa",
+      "risco": "verde",
+      "status": "aguardando_medico",
+      "createdAt": "2026-09-15T12:43:36.802Z"
+    }
+  ],
+  "tv_chamada": {
+    "id": "1789126549637",
+    "localTipo": "Guichê",
+    "localNumero": "01",
+    "paciente": "Pedro",
+    "hora": "08:35"
+  },
+  "tv_historico": [
+    {
+      "id": "1789126549637",
+      "localTipo": "Guichê",
+      "localNumero": "01",
+      "paciente": "Pedro",
+      "hora": "08:35"
+    }
+  ],
+  "consultas": [
+    {
+      "id": 1789474377561,
+      "paciente": "Pedro",
+      "diagnostico": "",
+      "medicacao": "Amoxicilina",
+      "obs": "Comeu camarão e tá vomitando",
+      "createdAt": "2026-09-15T12:12:57.561Z"
+    }
+  ]
 }
