@@ -657,3 +657,27 @@ body:has(#usuario) button {
       max-height: 80%;
       object-fit: contain;
     }
+.botoes-consulta {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.botoes-consulta button {
+  flex: 1;
+  margin-top: 0;
+}
+
+.btn-ir-alta {
+  background: linear-gradient(135deg, #198754, #146c43);
+}
+
+.btn-ir-alta:hover {
+  background: linear-gradient(135deg, #157347, #0f5132);
+}
+
+@media (max-width: 600px) {
+  .botoes-consulta {
+    flex-direction: column;
+  }
+}
