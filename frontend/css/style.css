@@ -681,3 +681,22 @@ body:has(#usuario) button {
     flex-direction: column;
   }
 }
+
+.btn-almoxarifado {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: auto;
+    padding: 10px 18px;
+    background: #6c5ce7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn-almoxarifado:hover {
+    background-color: #5849c4;
+}
