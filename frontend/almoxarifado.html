@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-brand">
+            <div class="logo-icon">📦</div>
+            <div>
+                <h1>Hospital - Almoxarifado</h1>
+                <span>Gestão de Entrada e Controle de Estoque</span>
+            </div>
+        </div>
+        <div class="nav-user">
+            <span class="user-pill" id="nomeusuario">📦 Almoxarifado</span>
+            <a href="index.html" class="btn-nav">🚪 Sair</a>
+        </div>
+    </header>
 
+    <div class="container">
+
+        <div class="alerta-estoque" id="alertaEstoque" style="display: none;">
+            ⚠️ <strong>Atenção</strong> <span id="alertaTexto"></span>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-icon purple">📦</div>
+                <div>
+                    <div class="stat-value" id="statItens">-</div>
+                    <div class="stat-label">Tipos Cadastrados</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">🟢</div>
+                <div>
+                    <div class="stat-value" id="statOk">-</div>
+                    <div class="stat-label">Estoque Normal</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">⚠️</div>
+                <div>
+                    <div class="stat-value" id="statBaixo">-</div>
+                    <div class="stat-label">Estoque Baixo</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red"></div>
+                <div>
+                    <div class="stat-value" id="statzerado">--</div>
+                    <div class="stat-label" id="statzerado">Estoque Zerado</div>
+                </div>
+            </div>
+        </div>
+        <div class="main-grid">
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Entrada de Medicamento</h2>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="entrada-tab">
+                            <button class="tab-btn active" id="tabNovo" onclick="selTab('novo')">Novo Medicamento</button>
+                            <button class="tab-btn" id="tabRepor" onclick="selTab('repor')">Repor Existente</button>
+                        </div>
+
+                        <div id="painelNovo">
+                            <div class="form-group">
+                                <label for="emNome">Nome do Medicamento</label>
+                                <input type="text" id="emNome" class="form-control" placeholder="Ex: Parecetamol 750mg" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="emQtd">Quantidade <small>(unidades a adicionar)</small></label>
+                                <input type="number" id="emQtd" class="form-control" value="10" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="emUnidade">Tipo de Unidade</label>
+                                <select id="emUnidade" class="form-control">
+                                    <option value="comprimidos">Comprimidos</option>
+                                    <option value="capsulas">Cápsulas</option>
+                                    <option value="frascos">Frascos</option>
+                                    <option value="ampolas">Ampolas</option>
+                                    <option value="saches">Sachês</option>
+                                    <option value="unidades">Unidades</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="emCategoria">Categoria Farmacológica</label>
+                                <select id="emCategoria" class="form-control">
+                                    <option value="Antibiótico">Antibiótico</option>
+                                    <option value="Anti-inflamátorio">Anti-inflamátorio</option>
+                                    <option value="Antialérgico">Analgésico / Antipirético</option>
+                                    <option value="Protetor Gástrico">Analgésico / Antipirético</option>
+                                    <option value="Antiespamódico">Analgésico / Antipirético</option>
+                                    <option value="Antiemético">Antiemético</option>
+                                    <option value="Solução">Solução</option>
+                                    <option value="Vitamina/Suplemento">Vitamina / Suplemento</option>
+                                    <option value="Geral">Geral</option>
+                                </select>
+                            </div>
+                            <button class="btn-full btn-purple" onclick="darEntrada()">📤 Registrar Entrada no Estoque</button>
+                        </div>
+                        <div id="PainelRepor" style="display: none;">
+                            <div class="form-group">
+                                <label for="selReporMed">Selecionar Medicamento</label>
+                                <select id="selReporMed" class="form-control">
+                                    <option value="">-- Selecione --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reporQtd">Quantidade a Adicionar</label>
+                                <input type="number" id="reporQtd" class="form-control" value="10" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="reporObs">Observação <small>(opcional)</small></label>
+                                <input type="text" id="reporObs" class="form-control" placeholder="Ex: Nota Fiscal NF-001">
+                            </div>
+                            <button class="btn-full btn-purple" onclick="reporEstoque()">Adicionar ao Estoque Existente</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header">
+                        <h2>Últimas Entradas Registradas</h2>
+                        <button class="btn-sm btn-secondary" onclick="carregarHistoricoEntradas()">🔄️</button>
+                    </div>
+                    <div class="card-body" id="historico-entradas">
+                        <div class="empty-icon">🗒️</div>
+                        <p>Nenhuma entrada registrada ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
