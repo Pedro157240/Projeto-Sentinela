@@ -12,6 +12,9 @@
     <button class="btn-sair" onclick="sair()">
       ← Sair
     </button>
+    <button class="btn-almoxarifado" onclick="almoxarifado()">
+      → Acessar Almoxarifado 📦
+    </button>
     <h2>Administração de Usuários</h2>
     <div class="admin-form">
       <input id="usuario" placeholder="Usuário">
@@ -62,6 +65,9 @@ function cadastrarUsuario() {
   .catch(error => {
     alert(error.message);
   });
+}
+function almoxarifado() {
+  window.location.href = "almoxarifado.html";
 }
 function sair() {
   fetch("/logout", {
