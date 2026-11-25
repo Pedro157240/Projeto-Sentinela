@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Hospital - Almoxarifado</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header class="navbar">
@@ -49,13 +50,14 @@
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon red"></div>
+                <div class="stat-icon red">🔴</div>
                 <div>
-                    <div class="stat-value" id="statzerado">--</div>
-                    <div class="stat-label" id="statzerado">Estoque Zerado</div>
+                    <div class="stat-value" id="statZerado">--</div>
+                    <div class="stat-label">Estoque Zerado</div>
                 </div>
             </div>
         </div>
+
         <div class="main-grid">
             <div>
                 <div class="card">
@@ -72,7 +74,7 @@
                         <div id="painelNovo">
                             <div class="form-group">
                                 <label for="emNome">Nome do Medicamento</label>
-                                <input type="text" id="emNome" class="form-control" placeholder="Ex: Parecetamol 750mg" autocomplete="off">
+                                <input type="text" id="emNome" class="form-control" placeholder="Ex: Paracetamol 750mg" autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label for="emQtd">Quantidade <small>(unidades a adicionar)</small></label>
@@ -93,19 +95,20 @@
                                 <label for="emCategoria">Categoria Farmacológica</label>
                                 <select id="emCategoria" class="form-control">
                                     <option value="Antibiótico">Antibiótico</option>
-                                    <option value="Anti-inflamátorio">Anti-inflamátorio</option>
-                                    <option value="Antialérgico">Analgésico / Antipirético</option>
-                                    <option value="Protetor Gástrico">Analgésico / Antipirético</option>
-                                    <option value="Antiespamódico">Analgésico / Antipirético</option>
+                                    <option value="Anti-inflamatório">Anti-inflamatório</option>
+                                    <option value="Analgésico / Antipirético">Analgésico / Antipirético</option>
+                                    <option value="Protetor Gástrico">Protetor Gástrico</option>
+                                    <option value="Antiespasmódico">Antiespasmódico</option>
                                     <option value="Antiemético">Antiemético</option>
                                     <option value="Solução">Solução</option>
-                                    <option value="Vitamina/Suplemento">Vitamina / Suplemento</option>
+                                    <option value="Vitamina / Suplemento">Vitamina / Suplemento</option>
                                     <option value="Geral">Geral</option>
                                 </select>
                             </div>
                             <button class="btn-full btn-purple" onclick="darEntrada()">📤 Registrar Entrada no Estoque</button>
                         </div>
-                        <div id="PainelRepor" style="display: none;">
+
+                        <div id="painelRepor" style="display: none;">
                             <div class="form-group">
                                 <label for="selReporMed">Selecionar Medicamento</label>
                                 <select id="selReporMed" class="form-control">
@@ -124,10 +127,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="card" style="margin-top: 20px;">
+
+                <div class="card">
                     <div class="card-header">
                         <h2>Últimas Entradas Registradas</h2>
-                        <button class="btn-sm btn-secondary" onclick="carregarHistoricoEntradas()">🔄️</button>
+                        <button class="btn-sm btn-secondary" onclick="carregarHistoricoEntradas()">🔄️ Atualizar</button>
                     </div>
                     <div class="card-body" id="historico-entradas">
                         <div class="empty-icon">🗒️</div>
