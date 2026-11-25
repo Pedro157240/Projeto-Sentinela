@@ -147,9 +147,5 @@ app.get("/medicacoes", (req, res) => {
   res.json(db.consultas);
 });
 
-// START DO SERVIDOR
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+// START
+module.exports = app;
