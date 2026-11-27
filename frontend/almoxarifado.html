@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="nav-user">
-            <span class="user-pill" id="nomeusuario">📦 Almoxarifado</span>
+            <span class="user-pill" id="nomeUsuario">📦 Almoxarifado</span>
             <a href="index.html" class="btn-nav">🚪 Sair</a>
         </div>
     </header>
@@ -67,8 +67,8 @@
 
                     <div class="card-body">
                         <div class="entrada-tab">
-                            <button class="tab-btn active" id="tabNovo" onclick="selTab('novo')">Novo Medicamento</button>
-                            <button class="tab-btn" id="tabRepor" onclick="selTab('repor')">Repor Existente</button>
+                            <button class="tab-btn active" id="tabNovo" onclick="setTab('novo')">Novo Medicamento</button>
+                            <button class="tab-btn" id="tabRepor" onclick="setTab('repor')">Repor Existente</button>
                         </div>
 
                         <div id="painelNovo">
@@ -141,5 +141,8 @@
             </div>
         </div>
     </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="script/almoxarifado.js"></script>
 </body>
 </html>
