@@ -33,6 +33,7 @@ function readDB() {
       pacientes: [],
       triagens: [],
       consultas: [],
+      estoque: [],
       tv_chamada: null,
       tv_historico: []
     };
@@ -61,6 +62,10 @@ function readDB() {
 
   if (!Array.isArray(db.consultas)) {
     db.consultas = [];
+  }
+
+  if (!Array.isArray(db.estoque)) {
+    db.estoque = [];
   }
 
   if (!db.tv_chamada) {
@@ -161,18 +166,16 @@ app.get("/pacientes/:id", (req, res) => {
 });
 
 
-// ==========================================
 // TRIAGEM
-// ==========================================
 
 app.post("/triagem", (req, res) => {
 
   const db = readDB();
 
 
-  // ==========================================
+
   // DADOS RECEBIDOS
-  // ==========================================
+
 
   const pacienteId =
     Number(req.body.pacienteId);
@@ -193,9 +196,9 @@ app.post("/triagem", (req, res) => {
     req.body.observacao || "";
 
 
-  // ==========================================
+
   // VALIDAR PACIENTE
-  // ==========================================
+
 
   if (!pacienteId) {
 
@@ -221,9 +224,9 @@ app.post("/triagem", (req, res) => {
   }
 
 
-  // ==========================================
+
   // VERIFICAR STATUS
-  // ==========================================
+
 
   if (paciente.status !== "triagem") {
 
@@ -235,9 +238,9 @@ app.post("/triagem", (req, res) => {
   }
 
 
-  // ==========================================
+
   // CLASSIFICAÇÃO DE RISCO
-  // ==========================================
+
 
   let risco =
     req.body.risco;
@@ -262,9 +265,9 @@ app.post("/triagem", (req, res) => {
   }
 
 
-  // ==========================================
+
   // CRIAR TRIAGEM
-  // ==========================================
+
 
   const triagem = {
 
@@ -301,9 +304,9 @@ app.post("/triagem", (req, res) => {
   };
 
 
-  // ==========================================
+
   // SALVAR TRIAGEM
-  // ==========================================
+
 
   db.triagens.push(
     triagem
@@ -325,9 +328,9 @@ app.post("/triagem", (req, res) => {
   writeDB(db);
 
 
-  // ==========================================
+
   // RESPONDER
-  // ==========================================
+
 
   res.json({
 
@@ -555,6 +558,116 @@ app.get("/medicacoes", (req, res) => {
   res.json(db.consultas);
 });
 
+// ALMOXARIFADO
+
+app.get("/estoque", (req, res) => {
+  const db = readDB();
+  res.json(db.estoque);
+});
+
+app.post("/estoque", (req, res) => {
+  const db = readDB();
+
+  const nome = (req.body.nome || "").trim();
+  const quantidade = Number(req.body.quantidade);
+  const unidade = req.body.unidade;
+  const categoria = req.body.categoria;
+
+  if (!nome) {
+    return res.status(400).json({
+      erro: "Informe o nome do medicamento."
+    });
+  }
+
+  if (!Number.isInteger(quantidade) || quantidade <= 0) {
+    return res.status(400).json({
+      erro: "Quantidade inválida."
+    });
+  }
+
+  const existente = db.estoque.find(
+    m => m.nome.toLowerCase() === nome.toLowerCase()
+  );
+
+  if (existente) {
+    return res.status(400).json({
+      erro: "Este medicamento já está cadastrado. Utilize a opção Repor Existente."
+    });
+  }
+
+  const medicamento = {
+    id: Date.now(),
+    nome,
+    quantidade,
+    unidade,
+    categoria,
+    criadoEm: new Date().toISOString()
+  };
+
+  db.estoque.push(medicamento);
+  writeDB(db);
+
+  res.status(201).json({
+    mensagem: "Medicamento cadastrado com sucesso!",
+    medicamento
+  });
+});
+
+app.patch("/estoque/:id", (req, res) => {
+  const db = readDB();
+  const id = Number(req.params.id);
+
+  const medicamento = db.estoque.find(
+    m => m.id === id
+  );
+
+  if (!medicamento) {
+    return res.status(404).json({
+      erro: "Medicamento não encontrado."
+    });
+  }
+
+  const quantidade = Number(req.body.quantidade);
+
+  if (!Number.isInteger(quantidade) || quantidade < 0) {
+    return res.status(400).json({
+      erro: "Quantidade inválida."
+    });
+  }
+
+  medicamento.quantidade += quantidade;
+  writeDB(db);
+
+  res.json({
+    mensagem: "Estoque atualizado com sucesso!",
+    medicamento
+  });
+});
+
+app.delete("/estoque/:id", (req, res) => {
+  const db = readDB();
+  const id = Number(req.params.id);
+
+  const indice = db.estoque.findIndex(
+    m => m.id === id
+  );
+
+  if (indice === -1) {
+    return res.status(404).json({
+      erro: "Medicamento não encontrado."
+    });
+  }
+
+  const removido = db.estoque.splice(indice, 1)[0];
+
+  writeDB(db);
+
+  res.json({
+    mensagem: "Medicamento removido com sucesso!",
+    medicamento: removido
+  });
+});
+
 // REGISTRAR ALTA
 
 app.post("/alta", (req, res) => {
@@ -734,9 +847,9 @@ app.get("/alta/:id/pdf", (req, res) => {
   doc.pipe(res);
 
 
-  // ==========================================
+
   // CABEÇALHO
-  // ==========================================
+
 
   doc
     .fontSize(20)
@@ -766,9 +879,9 @@ app.get("/alta/:id/pdf", (req, res) => {
   doc.moveDown(2);
 
 
-  // ==========================================
+
   // DADOS DO PACIENTE
-  // ==========================================
+
 
   doc
     .fontSize(14)
@@ -833,9 +946,9 @@ app.get("/alta/:id/pdf", (req, res) => {
   );
 
 
-  // ==========================================
+
   // TRIAGEM
-  // ==========================================
+
 
   if (triagem) {
 
@@ -883,9 +996,9 @@ app.get("/alta/:id/pdf", (req, res) => {
   }
 
 
-  // ==========================================
+
   // CONSULTA MÉDICA
-  // ==========================================
+
 
   if (consulta) {
 
@@ -923,9 +1036,9 @@ app.get("/alta/:id/pdf", (req, res) => {
   }
 
 
-  // ==========================================
+
   // ALTA
-  // ==========================================
+
 
   doc.moveDown(2);
 
@@ -960,9 +1073,9 @@ app.get("/alta/:id/pdf", (req, res) => {
   );
 
 
-  // ==========================================
+
   // RODAPÉ
-  // ==========================================
+
 
   doc.moveDown(4);
 
